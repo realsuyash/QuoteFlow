@@ -35,7 +35,8 @@ type MoodLabel = MoodObject['label'];
 
 export default function HomePage() {
   const [quoteData, setQuoteData] = useState<GenerateQuoteOutput | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true); // For subsequent loads and initial QuoteDisplay skeleton logic
+  const [isInitialLoading, setIsInitialLoading] = useState(true); // For splash screen
   const [isFlowerAnimationActive, setIsFlowerAnimationActive] = useState(false);
   const [selectedMood, setSelectedMood] = useState<MoodLabel | null>(null);
   const { toast } = useToast();
@@ -48,9 +49,9 @@ export default function HomePage() {
     if (mood === 'Motivational') return 'text-primary';
     if (mood === 'Funny') return 'text-accent';
     if (mood === 'Love') return 'text-chart-1';
-    if (mood === 'Sad') return 'text-foreground'; 
+    if (mood === 'Sad') return 'text-foreground';
     if (mood === 'Scientific') return 'text-accent';
-    return 'text-muted-foreground'; 
+    return 'text-muted-foreground';
   }, []);
 
   const fetchQuoteAndAnimate = useCallback(async (moodToFetch?: MoodLabel | null) => {
@@ -75,7 +76,7 @@ export default function HomePage() {
     } else if (finalMood === 'Scientific') {
       newBgComponent = TechyBackground;
     }
-    
+
     setBackgroundComponent(() => newBgComponent);
     setIsGrayscale(grayscaleActive);
     setSubtitleColorClass(getSubtitleColor(finalMood));
@@ -91,7 +92,8 @@ export default function HomePage() {
         description: "Failed to fetch a new quote. Please try again.",
         variant: "destructive",
       });
-      setBackgroundComponent(() => DefaultAnimatedBackground); 
+      // Reset to default if error
+      setBackgroundComponent(() => DefaultAnimatedBackground);
       setIsGrayscale(false);
       setSubtitleColorClass(getSubtitleColor(null));
     } finally {
@@ -104,10 +106,11 @@ export default function HomePage() {
 
   useEffect(() => {
     const loadInitialQuote = async () => {
-      setIsLoading(true);
+      setIsLoading(true); // Manages skeleton/spinner for QuoteDisplay/Button
+      // isInitialLoading is already true by default for splash screen
       setBackgroundComponent(() => DefaultAnimatedBackground);
       setIsGrayscale(false);
-      setSubtitleColorClass(getSubtitleColor(null)); 
+      setSubtitleColorClass(getSubtitleColor(null));
       try {
         const newQuote = await generateQuote({ seed: Math.random() });
         setQuoteData(newQuote);
@@ -130,6 +133,7 @@ export default function HomePage() {
         setSubtitleColorClass(getSubtitleColor(null));
       } finally {
         setIsLoading(false);
+        setIsInitialLoading(false); // Remove splash screen
       }
     };
     loadInitialQuote();
@@ -153,6 +157,31 @@ export default function HomePage() {
     setIsGrayscale(grayscaleActive);
     setSubtitleColorClass(getSubtitleColor(moodLabel));
   };
+
+  if (isInitialLoading) {
+    return (
+      <>
+        {BackgroundComponent && (
+          <div className="fixed inset-0 z-[-1]">
+            <BackgroundComponent />
+          </div>
+        )}
+        <div
+          className={cn(
+            "flex flex-col items-center justify-center min-h-screen p-4 text-center bg-transparent text-foreground relative",
+            isGrayscale ? 'grayscale-filter' : '' // Though grayscale won't be active on initial load usually
+          )}
+        >
+          <WaterRippleEffect />
+          <div className="flex flex-col items-center justify-center">
+            <p className="text-3xl font-semibold animate-pulse text-primary">
+              Generating new Quote by Suyash… 😄
+            </p>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -190,7 +219,7 @@ export default function HomePage() {
                   variant={selectedMood === mood.label ? "default" : "outline"}
                   onClick={() => handleMoodSelect(mood.label)}
                   className={cn(
-                    "capitalize px-4 py-2 w-36 rounded-full shadow-sm transition-all duration-150 ease-in-out", 
+                    "capitalize px-4 py-2 w-36 rounded-full shadow-sm transition-all duration-150 ease-in-out",
                     selectedMood === mood.label ? "bg-primary text-primary-foreground scale-105" : "bg-secondary/70 backdrop-blur-sm text-secondary-foreground hover:bg-secondary/90"
                   )}
                   aria-label={`Select ${mood.label} mood`}
