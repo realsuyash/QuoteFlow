@@ -16,6 +16,7 @@ import SunriseBackground from '@/components/backgrounds/SunriseBackground';
 import CloudyBackground from '@/components/backgrounds/CloudyBackground';
 import TechyBackground from '@/components/backgrounds/TechyBackground';
 import AscendBackground from '@/components/backgrounds/AscendBackground';
+import FunnyBackground from '@/components/backgrounds/FunnyBackground';
 
 
 interface MoodObject {
@@ -35,11 +36,17 @@ type MoodLabel = MoodObject['label'];
 
 export default function HomePage() {
   const [quoteData, setQuoteData] = useState<GenerateQuoteOutput | null>(null);
-  const [isLoading, setIsLoading] = useState(true); // For subsequent loads and initial QuoteDisplay skeleton logic
-  const [isInitialLoading, setIsInitialLoading] = useState(true); // For splash screen
+  const [isLoading, setIsLoading] = useState(true); 
+  const [isInitialLoading, setIsInitialLoading] = useState(true); 
+  
   const [isFlowerAnimationActive, setIsFlowerAnimationActive] = useState(false);
-  const [selectedMood, setSelectedMood] = useState<MoodLabel | null>('Motivational'); // Default to Motivational
+  const [isFunnyAnimationActive, setIsFunnyAnimationActive] = useState(false);
+  const [isMotivationalAnimationActive, setIsMotivationalAnimationActive] = useState(false);
+  
+  const [selectedMood, setSelectedMood] = useState<MoodLabel | null>('Motivational'); 
   const { toast } = useToast();
+
+  const [isShaking, setIsShaking] = useState(false);
 
   const getSubtitleColor = useCallback((mood: MoodLabel | null): string => {
     if (mood === 'Motivational') return 'text-primary';
@@ -50,13 +57,16 @@ export default function HomePage() {
     return 'text-muted-foreground';
   }, []);
 
-  const [BackgroundComponent, setBackgroundComponent] = useState<ComponentType | null>(() => AscendBackground); // Default to Motivational background
+  const [BackgroundComponent, setBackgroundComponent] = useState<ComponentType<{isActive?: boolean}> | null>(() => AscendBackground); 
   const [isGrayscale, setIsGrayscale] = useState(false);
-  const [subtitleColorClass, setSubtitleColorClass] = useState(getSubtitleColor('Motivational')); // Default to Motivational subtitle color
+  const [subtitleColorClass, setSubtitleColorClass] = useState(getSubtitleColor('Motivational')); 
 
 
   const fetchQuoteAndAnimate = useCallback(async (moodToFetch?: MoodLabel | null) => {
     setIsLoading(true);
+    setIsFlowerAnimationActive(false);
+    setIsFunnyAnimationActive(false);
+    setIsMotivationalAnimationActive(false);
 
     const finalMood = moodToFetch !== undefined ? moodToFetch : selectedMood;
     const input: GenerateQuoteInput = { seed: Math.random() };
@@ -64,7 +74,7 @@ export default function HomePage() {
       input.mood = finalMood;
     }
 
-    let newBgComponent: ComponentType | null = DefaultAnimatedBackground;
+    let newBgComponent: ComponentType<{isActive?: boolean}> | null = DefaultAnimatedBackground;
     let grayscaleActive = false;
 
     if (finalMood === 'Sad') {
@@ -76,51 +86,74 @@ export default function HomePage() {
       newBgComponent = SunriseBackground;
     } else if (finalMood === 'Scientific') {
       newBgComponent = TechyBackground;
-    } else if (finalMood === 'Funny'){ // Funny also gets default for now, or its own if defined
-      newBgComponent = DefaultAnimatedBackground; // Or a specific funny background
+    } else if (finalMood === 'Funny'){ 
+      newBgComponent = FunnyBackground;
+      setIsShaking(true);
+      setTimeout(() => setIsShaking(false), 300);
     }
-
-
+    
     setBackgroundComponent(() => newBgComponent);
     setIsGrayscale(grayscaleActive);
     setSubtitleColorClass(getSubtitleColor(finalMood));
 
     try {
       const newQuote = await generateQuote(input);
-      setIsFlowerAnimationActive(true);
+      
+      if (finalMood === 'Funny') {
+        setIsFunnyAnimationActive(true);
+        setTimeout(() => setIsFunnyAnimationActive(false), 4500);
+      } else if (finalMood === 'Motivational') {
+        setIsMotivationalAnimationActive(true);
+        setTimeout(() => setIsMotivationalAnimationActive(false), 4500);
+      } else {
+        setIsFlowerAnimationActive(true);
+        setTimeout(() => setIsFlowerAnimationActive(false), 6000);
+      }
       setQuoteData(newQuote);
-    } catch (e) {
+
+    } catch (e: any) {
       console.error(e);
+      const errorMessage = e.message || "Failed to fetch a new quote.";
+      let toastDescription = "Failed to fetch a new quote. Please try again.";
+
+      if (typeof errorMessage === 'string' && (errorMessage.includes("429") || errorMessage.toLowerCase().includes("quota"))) {
+        toastDescription = "Whoa there, easy on the clicks! Rate limit reached. Please try again in a little bit. 😄";
+      }
+      
       toast({
         title: "Error",
-        description: "Failed to fetch a new quote. Please try again.",
+        description: toastDescription,
         variant: "destructive",
       });
+      
       // Reset to default if error
-      setBackgroundComponent(() => DefaultAnimatedBackground);
+      setBackgroundComponent(() => AscendBackground); // Revert to default (motivational) on error
       setIsGrayscale(false);
-      setSubtitleColorClass(getSubtitleColor(null));
+      setSubtitleColorClass(getSubtitleColor('Motivational'));
+      setSelectedMood('Motivational');
+
+
     } finally {
       setIsLoading(false);
-      setTimeout(() => {
-        setIsFlowerAnimationActive(false);
-      }, 6000);
     }
   }, [toast, selectedMood, getSubtitleColor]);
 
   useEffect(() => {
     const loadInitialQuote = async () => {
       setIsLoading(true);
-      setIsInitialLoading(true); // Ensure splash is shown
+      setIsInitialLoading(true); 
 
-      // Set initial theme elements for Motivational mood
       setBackgroundComponent(() => AscendBackground);
       setIsGrayscale(false);
       setSubtitleColorClass(getSubtitleColor('Motivational'));
+      setSelectedMood('Motivational');
 
       try {
         const newQuote = await generateQuote({ seed: Math.random(), mood: 'Motivational' });
         setQuoteData(newQuote);
+        // Trigger motivational animation on initial load
+        setIsMotivationalAnimationActive(true);
+        setTimeout(() => setIsMotivationalAnimationActive(false), 4500);
       } catch (e) {
         if (e instanceof Error) {
           console.error(e.message);
@@ -137,37 +170,21 @@ export default function HomePage() {
             variant: "destructive",
           });
         }
-         // Fallback to default theme elements on error
         setBackgroundComponent(() => DefaultAnimatedBackground);
         setSubtitleColorClass(getSubtitleColor(null));
+        setSelectedMood(null);
 
       } finally {
         setIsLoading(false);
-        setIsInitialLoading(false); // Remove splash screen
+        setIsInitialLoading(false); 
       }
     };
     loadInitialQuote();
-  }, [toast, getSubtitleColor]); // getSubtitleColor added to dependencies
+  }, [toast, getSubtitleColor]); 
 
   const handleMoodSelect = (moodLabel: MoodLabel) => {
     setSelectedMood(moodLabel);
-    let newBgComponent: ComponentType | null = DefaultAnimatedBackground;
-    let grayscaleActive = false;
-    if (moodLabel === 'Sad') {
-      newBgComponent = CloudyBackground;
-      grayscaleActive = true;
-    } else if (moodLabel === 'Motivational') {
-      newBgComponent = AscendBackground;
-    } else if (moodLabel === 'Love') {
-      newBgComponent = SunriseBackground;
-    } else if (moodLabel === 'Scientific') {
-      newBgComponent = TechyBackground;
-    } else if (moodLabel === 'Funny'){
-      newBgComponent = DefaultAnimatedBackground;
-    }
-    setBackgroundComponent(() => newBgComponent);
-    setIsGrayscale(grayscaleActive);
-    setSubtitleColorClass(getSubtitleColor(moodLabel));
+    fetchQuoteAndAnimate(moodLabel); // Fetch new quote when mood is selected
   };
 
   if (isInitialLoading) {
@@ -175,7 +192,7 @@ export default function HomePage() {
       <>
         {BackgroundComponent && (
           <div className="fixed inset-0 z-[-1]">
-            <BackgroundComponent />
+            <BackgroundComponent isActive={isMotivationalAnimationActive}/>
           </div>
         )}
         <div
@@ -195,22 +212,27 @@ export default function HomePage() {
     );
   }
 
+  const currentBgIsActive = selectedMood === 'Funny' ? isFunnyAnimationActive : selectedMood === 'Motivational' ? isMotivationalAnimationActive : undefined;
+
+
   return (
     <>
       {BackgroundComponent && (
         <div className="fixed inset-0 z-[-1]">
-          <BackgroundComponent />
+          { /* @ts-ignore */ }
+          <BackgroundComponent isActive={currentBgIsActive} />
         </div>
       )}
       <div
         className={cn(
           "flex flex-col items-center justify-center min-h-screen p-4 text-center bg-transparent text-foreground relative",
           "transition-all duration-700 ease-in-out",
-          isGrayscale ? 'grayscale-filter' : ''
+          isGrayscale ? 'grayscale-filter' : '',
+          isShaking ? 'animate-screenShake' : ''
         )}
       >
         <WaterRippleEffect />
-        <FlowerAnimation isActive={isFlowerAnimationActive} />
+        {selectedMood !== 'Funny' && selectedMood !== 'Motivational' && <FlowerAnimation isActive={isFlowerAnimationActive} />}
 
         <header className="py-8 relative z-10">
           <h1 className="text-5xl font-bold text-primary tracking-tight">
