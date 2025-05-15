@@ -60,7 +60,9 @@ export default function HomePage() {
     if (finalMood === 'Sad') {
       newBgComponent = CloudyBackground;
       grayscaleActive = true;
-    } else if (finalMood === 'Motivational' || finalMood === 'Love') {
+    } else if (finalMood === 'Motivational') {
+      newBgComponent = TechyBackground;
+    } else if (finalMood === 'Love') {
       newBgComponent = SunriseBackground;
     } else if (finalMood === 'Scientific') {
       newBgComponent = TechyBackground;
@@ -135,7 +137,9 @@ export default function HomePage() {
     if (moodLabel === 'Sad') {
       newBgComponent = CloudyBackground;
       grayscaleActive = true;
-    } else if (moodLabel === 'Motivational' || moodLabel === 'Love') {
+    } else if (moodLabel === 'Motivational') {
+      newBgComponent = TechyBackground;
+    } else if (moodLabel === 'Love') {
       newBgComponent = SunriseBackground;
     } else if (moodLabel === 'Scientific') {
       newBgComponent = TechyBackground;
