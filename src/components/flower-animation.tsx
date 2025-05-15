@@ -91,7 +91,7 @@ const FlowerAnimation: React.FC<FlowerAnimationProps> = ({ isActive, count = 30 
   }
 
   return (
-    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+    <div className="fixed inset-0 z-20 pointer-events-none overflow-hidden">
       {flowers.map((flower) => (
         <Flower key={flower.id} style={flower.style} colorClass={flower.colorClass} />
       ))}
