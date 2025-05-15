@@ -17,10 +17,11 @@ export default function HomePage() {
   // Fetches quote and triggers animation
   const fetchQuoteAndAnimate = useCallback(async () => {
     setIsLoading(true);
-    setIsFlowerAnimationActive(true); // Start flower animation
+    // setIsFlowerAnimationActive(true); // Start flower animation - MOVED
 
     try {
       const newQuote = await generateQuote({ seed: Math.random() });
+      setIsFlowerAnimationActive(true); // Start flower animation when quote is ready
       setQuoteData(newQuote);
     } catch (e) {
       console.error(e);
@@ -62,10 +63,10 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center bg-background text-foreground relative">
-      {/* Flower animation component - z-index 0 */}
+      {/* Flower animation component - z-index should be higher than content if flowers are in front */}
       <FlowerAnimation isActive={isFlowerAnimationActive} />
 
-      {/* Content needs to be above flowers - z-index 10 */}
+      {/* Content needs to be above flowers if flowers are behind, or below if flowers are in front */}
       <header className="py-8 relative z-10">
         <h1 className="text-5xl font-bold text-primary tracking-tight">
           QuoteFlow
