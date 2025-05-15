@@ -5,23 +5,25 @@ import { useState, useEffect, useCallback } from 'react';
 import { generateQuote, type GenerateQuoteOutput } from '@/ai/flows/generate-quote';
 import QuoteDisplay from '@/components/quote-display';
 import NewQuoteButton from '@/components/new-quote-button';
-import FlowerAnimation from '@/components/flower-animation'; // New import
+import FlowerAnimation from '@/components/flower-animation';
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils"; // Import cn utility
 
 export default function HomePage() {
   const [quoteData, setQuoteData] = useState<GenerateQuoteOutput | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isFlowerAnimationActive, setIsFlowerAnimationActive] = useState(false); // State for flower animation
+  const [isFlowerAnimationActive, setIsFlowerAnimationActive] = useState(false);
+  const [visualEffect, setVisualEffect] = useState<'normal' | 'dimmed'>('normal'); // State for background effect
   const { toast } = useToast();
 
-  // Fetches quote and triggers animation
   const fetchQuoteAndAnimate = useCallback(async () => {
+    setVisualEffect('dimmed'); // Dim the background
     setIsLoading(true);
-    // setIsFlowerAnimationActive(true); // Start flower animation - MOVED
 
     try {
       const newQuote = await generateQuote({ seed: Math.random() });
-      setIsFlowerAnimationActive(true); // Start flower animation when quote is ready
+      setVisualEffect('normal'); // Brighten back to normal as flowers/quote appear
+      setIsFlowerAnimationActive(true);
       setQuoteData(newQuote);
     } catch (e) {
       console.error(e);
@@ -30,17 +32,15 @@ export default function HomePage() {
         description: "Failed to fetch a new quote. Please try again.",
         variant: "destructive",
       });
+      setVisualEffect('normal'); // Ensure visual effect resets on error
     } finally {
       setIsLoading(false);
-      // Set a timeout to stop the flower animation after it has played
-      // Max animation delay (1.5s) + max duration (4s) = 5.5s. Hide after 6s.
       setTimeout(() => {
         setIsFlowerAnimationActive(false);
-      }, 6000); 
+      }, 6000);
     }
   }, [toast]);
 
-  // Initial quote fetch on mount (without animation)
   useEffect(() => {
     const loadInitialQuote = async () => {
       setIsLoading(true);
@@ -62,18 +62,22 @@ export default function HomePage() {
   }, [toast]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center bg-background text-foreground relative">
-      {/* Flower animation component - z-index should be higher than content if flowers are in front */}
+    <div
+      className={cn(
+        "flex flex-col items-center justify-center min-h-screen p-4 text-center bg-background text-foreground relative",
+        "transition-all duration-700 ease-in-out", // For smooth filter transition
+        visualEffect === 'dimmed' ? 'brightness-[0.6]' : 'brightness-100'
+      )}
+    >
       <FlowerAnimation isActive={isFlowerAnimationActive} />
 
-      {/* Content needs to be above flowers if flowers are behind, or below if flowers are in front */}
       <header className="py-8 relative z-10">
         <h1 className="text-5xl font-bold text-primary tracking-tight">
           QuoteFlow
         </h1>
         <p className="text-muted-foreground mt-2 text-lg">Your daily dose of inspiration</p>
       </header>
-      
+
       <main className="flex flex-col items-center justify-center flex-1 w-full max-w-2xl px-4 relative z-10">
         <QuoteDisplay quote={quoteData?.quote} isLoading={isLoading} />
         <NewQuoteButton onClick={fetchQuoteAndAnimate} isLoading={isLoading} />
