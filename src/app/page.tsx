@@ -10,18 +10,30 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-const moods = ['Motivational', 'Funny', 'Love', 'Sad', 'Scientific'] as const;
-type Mood = typeof moods[number];
+interface MoodObject {
+  label: 'Motivational' | 'Funny' | 'Love' | 'Sad' | 'Scientific';
+  emoji: string;
+}
+
+const moods: MoodObject[] = [
+  { label: 'Motivational', emoji: '🎯' },
+  { label: 'Funny', emoji: '🤣' },
+  { label: 'Love', emoji: '❤️' },
+  { label: 'Sad', emoji: '😔' },
+  { label: 'Scientific', emoji: '🔬' },
+];
+
+type MoodLabel = MoodObject['label'];
 
 export default function HomePage() {
   const [quoteData, setQuoteData] = useState<GenerateQuoteOutput | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isFlowerAnimationActive, setIsFlowerAnimationActive] = useState(false);
   const [visualEffect, setVisualEffect] = useState<'normal' | 'dimmed'>('normal');
-  const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
+  const [selectedMood, setSelectedMood] = useState<MoodLabel | null>(null);
   const { toast } = useToast();
 
-  const fetchQuoteAndAnimate = useCallback(async (moodToFetch?: Mood | null) => {
+  const fetchQuoteAndAnimate = useCallback(async (moodToFetch?: MoodLabel | null) => {
     setVisualEffect('dimmed');
     setIsLoading(true);
 
@@ -72,8 +84,8 @@ export default function HomePage() {
     loadInitialQuote();
   }, [toast]);
 
-  const handleMoodSelect = (mood: Mood) => {
-    setSelectedMood(mood);
+  const handleMoodSelect = (moodLabel: MoodLabel) => {
+    setSelectedMood(moodLabel);
     // No longer fetching quote here, only setting the mood.
     // The "New Quote" button will use this selectedMood.
   };
@@ -101,15 +113,16 @@ export default function HomePage() {
           <div className="flex flex-wrap justify-center gap-2">
             {moods.map((mood) => (
               <Button
-                key={mood}
-                variant={selectedMood === mood ? "default" : "outline"}
-                onClick={() => handleMoodSelect(mood)}
+                key={mood.label}
+                variant={selectedMood === mood.label ? "default" : "outline"}
+                onClick={() => handleMoodSelect(mood.label)}
                 className={cn(
                   "capitalize px-4 py-2 rounded-full shadow-sm transition-all duration-150 ease-in-out",
-                  selectedMood === mood ? "bg-primary text-primary-foreground scale-105" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                  selectedMood === mood.label ? "bg-primary text-primary-foreground scale-105" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                 )}
+                aria-label={`Select ${mood.label} mood`}
               >
-                {mood}
+                {selectedMood === mood.label ? mood.emoji : mood.label}
               </Button>
             ))}
           </div>
