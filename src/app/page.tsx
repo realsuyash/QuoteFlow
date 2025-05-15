@@ -6,6 +6,7 @@ import { generateQuote, type GenerateQuoteOutput, type GenerateQuoteInput } from
 import QuoteDisplay from '@/components/quote-display';
 import NewQuoteButton from '@/components/new-quote-button';
 import FlowerAnimation from '@/components/flower-animation';
+import WaterRippleEffect from '@/components/water-ripple-effect'; // Import the new component
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -98,6 +99,7 @@ export default function HomePage() {
         visualEffect === 'dimmed' ? 'brightness-[0.6]' : 'brightness-100'
       )}
     >
+      <WaterRippleEffect /> {/* Add the WaterRippleEffect component */}
       <FlowerAnimation isActive={isFlowerAnimationActive} />
 
       <header className="py-8 relative z-10">

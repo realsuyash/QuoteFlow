@@ -141,3 +141,26 @@ body {
   animation-fill-mode: forwards; /* Stay at the end state (opacity: 0) */
   /* animation-duration and animation-delay are set via inline styles on each element */
 }
+
+/* Animation for water ripple effect */
+@keyframes ripple-effect {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(6);
+    opacity: 0;
+  }
+}
+
+.ripple {
+  position: fixed;
+  width: 50px; 
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid hsl(var(--primary));
+  animation: ripple-effect 0.7s ease-out forwards;
+  pointer-events: none;
+  z-index: 40; 
+}
