@@ -10,100 +10,95 @@ body {
 
 @layer base {
   :root {
-    --background: 0 0% 94%; /* Light Grey #F0F0F0 */
-    --foreground: 0 0% 20%; /* Dark Grey #333333 */
+    --background: 45 60% 96%; /* Light Cream */
+    --foreground: 240 10% 20%; /* Dark Cool Gray */
 
     --card: 0 0% 100%; /* White for cards */
-    --card-foreground: 0 0% 20%; /* Dark Grey for card text */
+    --card-foreground: 240 10% 20%; /* Dark Cool Gray for card text */
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 20%;
+    --popover-foreground: 240 10% 20%;
 
-    --primary: 207 44% 49%; /* Calm Blue #4682B4 */
-    --primary-foreground: 210 40% 98%; /* Light color for text on primary */
+    --primary: 260 70% 60%; /* Vibrant Purple */
+    --primary-foreground: 0 0% 100%; /* White */
 
-    --secondary: 0 0% 90%; /* Slightly darker grey for secondary elements */
-    --secondary-foreground: 0 0% 9%; /* Dark text for secondary */
+    --secondary: 210 60% 92%; /* Light Sky Blue */
+    --secondary-foreground: 210 30% 30%; /* Darker Sky Blue */
 
-    --muted: 0 0% 85%; /* Muted grey */
-    --muted-foreground: 0 0% 40%; /* Muted text */
+    --muted: 30 20% 90%; /* Muted Peach */
+    --muted-foreground: 30 10% 45%; /* Darker Muted Peach */
 
-    --accent: 180 100% 25%; /* Teal #008080 */
-    --accent-foreground: 180 100% 98%; /* Light color for text on accent */
+    --accent: 170 70% 45%; /* Tealish Green */
+    --accent-foreground: 0 0% 100%; /* White */
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 87%; /* Adjusted border color for better contrast on light grey */
-    --input: 0 0% 87%; /* Adjusted input background */
-    --ring: 207 44% 49%; /* Ring color same as primary */
+    --border: 30 20% 85%; /* Slightly darker Muted Peach for borders */
+    --input: 30 20% 88%; /* Input background */
+    --ring: 260 70% 60%; /* Ring color same as primary */
 
     --radius: 0.5rem;
 
-    /* Chart colors - kept for completeness, can be adjusted if charts are used */
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     
-    /* Sidebar colors - an attempt to make them consistent with the new theme */
-    --sidebar-background: 0 0% 97%; /* Very light grey, slightly off-white */
-    --sidebar-foreground: 0 0% 20%; /* Dark grey text */
-    --sidebar-primary: 207 44% 49%; /* Match main primary */
-    --sidebar-primary-foreground: 210 40% 98%; /* Match main primary-foreground */
-    --sidebar-accent: 180 100% 30%; /* Slightly lighter teal */
-    --sidebar-accent-foreground: 180 100% 98%; /* Light text for sidebar accent */
-    --sidebar-border: 0 0% 85%;
-    --sidebar-ring: 207 44% 49%;
+    --sidebar-background: 45 50% 98%; 
+    --sidebar-foreground: 240 10% 25%; 
+    --sidebar-primary: 260 65% 55%; 
+    --sidebar-primary-foreground: 0 0% 100%; 
+    --sidebar-accent: 170 65% 40%; 
+    --sidebar-accent-foreground: 0 0% 100%; 
+    --sidebar-border: 30 20% 80%;
+    --sidebar-ring: 260 65% 55%;
   }
 
   .dark {
-    /* Dark theme based on inverting/adjusting light theme */
-    --background: 240 10% 3.9%; /* Dark blue-grey */
+    --background: 240 10% 10%; /* Dark Blue-Gray */
     --foreground: 0 0% 95%; /* Off-white */
 
-    --card: 240 10% 7%; /* Slightly lighter dark blue-grey for cards */
+    --card: 240 10% 15%; 
     --card-foreground: 0 0% 95%;
 
-    --popover: 240 10% 7%;
+    --popover: 240 10% 15%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 207 50% 55%; /* Lighter Calm Blue for dark mode */
-    --primary-foreground: 207 44% 15%; /* Darker blue for text on primary */
+    --primary: 260 70% 65%; /* Lighter Vibrant Purple */
+    --primary-foreground: 260 70% 10%; /* Darker purple for text */
 
-    --secondary: 240 10% 10%; /* Darker secondary */
-    --secondary-foreground: 0 0% 95%;
+    --secondary: 210 30% 20%; /* Darker Sky Blue */
+    --secondary-foreground: 210 60% 85%; /* Lighter Sky Blue text */
 
-    --muted: 240 10% 15%; /* Darker muted */
-    --muted-foreground: 0 0% 60%;
+    --muted: 30 15% 20%; /* Darker Muted Peach */
+    --muted-foreground: 30 10% 70%; /* Lighter Muted Peach text */
 
-    --accent: 180 90% 35%; /* Brighter Teal for dark mode */
-    --accent-foreground: 180 100% 95%; 
+    --accent: 170 70% 50%; /* Brighter Tealish Green */
+    --accent-foreground: 170 70% 5%; 
 
-    --destructive: 0 62.8% 30.6%; /* Default dark destructive */
+    --destructive: 0 62.8% 30.6%; 
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 10% 12%; /* Dark border */
-    --input: 240 10% 12%; /* Dark input */
-    --ring: 207 50% 55%; /* Ring color same as dark primary */
+    --border: 240 10% 20%; 
+    --input: 240 10% 20%; 
+    --ring: 260 70% 65%; 
 
-    /* Dark theme chart colors - adjust if needed */
     --chart-1: 207 70% 50%;
     --chart-2: 180 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
     
-    /* Dark Sidebar colors */
-    --sidebar-background: 240 10% 5%;
+    --sidebar-background: 240 10% 12%;
     --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 207 50% 55%;
-    --sidebar-primary-foreground: 207 44% 10%;
-    --sidebar-accent: 180 90% 30%;
-    --sidebar-accent-foreground: 180 100% 90%;
-    --sidebar-border: 240 10% 10%;
-    --sidebar-ring: 207 50% 55%;
+    --sidebar-primary: 260 65% 60%;
+    --sidebar-primary-foreground: 260 70% 8%;
+    --sidebar-accent: 170 65% 45%;
+    --sidebar-accent-foreground: 170 70% 90%;
+    --sidebar-border: 240 10% 18%;
+    --sidebar-ring: 260 65% 60%;
   }
 }
 
@@ -113,7 +108,6 @@ body {
   }
   body {
     @apply bg-background text-foreground;
-    /* Ensure smooth font rendering */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -123,24 +117,21 @@ body {
 @keyframes elementThrowEffect {
   0% {
     opacity: 0;
-    /* Start at its initial JS-set position (bottom-center), small, no rotation */
     transform: translate(0, 0) scale(var(--initial-scale, 0.2)) rotate(var(--initial-rotate, 0deg));
   }
   20% {
-    opacity: 1; /* Quickly become visible */
+    opacity: 1; 
   }
   100% {
     opacity: 0;
-    /* Animate to its final calculated position (using CSS vars for delta), scaled up, rotated */
     transform: translate(var(--tx, 0px), var(--ty, 0px)) scale(var(--target-scale, 1.3)) rotate(var(--target-rotate, 720deg));
   }
 }
 
 .animate-elementThrow {
   animation-name: elementThrowEffect;
-  animation-timing-function: cubic-bezier(0.25, 0.8, 0.5, 1); /* Ease out quad like */
-  animation-fill-mode: forwards; /* Stay at the end state (opacity: 0) */
-  /* animation-duration and animation-delay are set via inline styles on each element */
+  animation-timing-function: cubic-bezier(0.25, 0.8, 0.5, 1); 
+  animation-fill-mode: forwards; 
 }
 
 /* Animation for water ripple effect */
@@ -150,25 +141,135 @@ body {
     opacity: 0.8;
   }
   100% {
-    transform: translate(-50%, -50%) scale(3.5); /* Reduced scale for smaller radius */
+    transform: translate(-50%, -50%) scale(3.5); 
     opacity: 0;
   }
 }
 
 .ripple {
   position: fixed;
-  width: 40px; /* Reduced size */
-  height: 40px; /* Reduced size */
+  width: 40px; 
+  height: 40px; 
   border-radius: 50%;
   border-width: 2px;
   border-style: solid;
-  /* border-color is now set via inline style in the component */
-  opacity: 0; /* Make ripple initially invisible */
+  opacity: 0; 
   animation-name: ripple-effect;
   animation-duration: 0.7s;
   animation-timing-function: ease-out;
   animation-fill-mode: forwards;
   pointer-events: none;
   z-index: 40; 
-  /* animation-delay is set via inline style in the component */
+}
+
+/* Default Animated Background */
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.default-animated-bg {
+  background: linear-gradient(-45deg, hsl(var(--primary)/0.6), hsl(var(--accent)/0.6), hsl(var(--secondary)/0.6), hsl(var(--muted)/0.6));
+  background-size: 400% 400%;
+  animation: gradientBG 25s ease infinite;
+}
+
+/* Sunrise Background */
+@keyframes sunrise {
+  0% { background-position: 0% 80%; } /* Deep colors at the bottom */
+  50% { background-position: 100% 20%; } /* Lighter colors rise */
+  100% { background-position: 0% 80%; }
+}
+
+.sunrise-bg {
+  background: linear-gradient(to top, #3a1c71, #d76d77, #ffaf7b); /* Purple -> Pink -> Orange */
+  background-size: 100% 300%; /* Taller gradient for vertical movement */
+  animation: sunrise 20s ease infinite;
+}
+
+/* Techy Background */
+@keyframes scanline {
+  0% { transform: translateY(-10px); }
+  100% { transform: translateY(10px); }
+}
+@keyframes subtleGrid {
+  0% { background-position: 0 0; }
+  100% { background-position: 40px 40px; } /* Adjust size for desired grid speed */
+}
+
+.techy-bg {
+  background-color: #0a0f14; /* Dark terminal blue/black */
+  background-image: 
+    linear-gradient(rgba(0, 180, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 180, 255, 0.07) 1px, transparent 1px);
+  background-size: 20px 20px; /* Grid size */
+  animation: subtleGrid 2s linear infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.techy-bg::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.3), transparent);
+  animation: scanline 4s linear infinite alternate;
+  opacity: 0.6;
+}
+
+
+/* Cloudy Background */
+@keyframes drift {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100vw); } /* ensure it goes off screen */
+}
+
+.cloud {
+  position: absolute;
+  border-radius: 50%;
+  background-color: rgba(200, 200, 200, 0.4); /* Light grey, semi-transparent */
+  opacity: 0.7;
+  animation-name: drift;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  filter: blur(2px);
+}
+
+.cloud.cloud1 {
+  width: 200px; height: 60px;
+  top: 10%; left: -200px; /* Start off-screen */
+  animation-duration: 60s;
+}
+.cloud.cloud2 {
+  width: 300px; height: 90px;
+  top: 25%; left: -300px;
+  animation-duration: 45s;
+  animation-delay: -15s;
+}
+.cloud.cloud3 {
+  width: 150px; height: 50px;
+  top: 40%; left: -150px;
+  animation-duration: 70s;
+  animation-delay: -5s;
+}
+.cloud.cloud4 {
+  width: 250px; height: 75px;
+  top: 60%; left: -250px;
+  animation-duration: 50s;
+  animation-delay: -25s;
+}
+.cloud.cloud5 {
+  width: 350px; height: 100px;
+  top: 75%; left: -350px;
+  animation-duration: 40s;
+  animation-delay: -10s;
+}
+
+.grayscale-filter {
+  filter: grayscale(100%);
+  transition: filter 0.7s ease-in-out;
 }

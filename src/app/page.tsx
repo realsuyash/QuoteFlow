@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, ComponentType } from 'react';
 import { generateQuote, type GenerateQuoteOutput, type GenerateQuoteInput } from '@/ai/flows/generate-quote';
 import QuoteDisplay from '@/components/quote-display';
 import NewQuoteButton from '@/components/new-quote-button';
@@ -10,6 +10,11 @@ import WaterRippleEffect from '@/components/water-ripple-effect';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+
+import DefaultAnimatedBackground from '@/components/backgrounds/DefaultAnimatedBackground';
+import SunriseBackground from '@/components/backgrounds/SunriseBackground';
+import CloudyBackground from '@/components/backgrounds/CloudyBackground';
+import TechyBackground from '@/components/backgrounds/TechyBackground';
 
 interface MoodObject {
   label: 'Motivational' | 'Funny' | 'Love' | 'Sad' | 'Scientific';
@@ -34,6 +39,10 @@ export default function HomePage() {
   const [selectedMood, setSelectedMood] = useState<MoodLabel | null>(null);
   const { toast } = useToast();
 
+  const [BackgroundComponent, setBackgroundComponent] = useState<ComponentType | null>(() => DefaultAnimatedBackground);
+  const [isGrayscale, setIsGrayscale] = useState(false);
+
+
   const fetchQuoteAndAnimate = useCallback(async (moodToFetch?: MoodLabel | null) => {
     setVisualEffect('dimmed');
     setIsLoading(true);
@@ -44,9 +53,27 @@ export default function HomePage() {
       input.mood = finalMood;
     }
 
+    // Determine background based on the mood being fetched
+    let newBgComponent: ComponentType | null = DefaultAnimatedBackground;
+    let grayscaleActive = false;
+
+    if (finalMood === 'Sad') {
+      newBgComponent = CloudyBackground;
+      grayscaleActive = true;
+    } else if (finalMood === 'Motivational' || finalMood === 'Love') {
+      newBgComponent = SunriseBackground;
+    } else if (finalMood === 'Scientific') {
+      newBgComponent = TechyBackground;
+    }
+    // For 'Funny' or no mood, it remains DefaultAnimatedBackground
+    
+    // Set background immediately before fetching quote for smoother transition
+    setBackgroundComponent(() => newBgComponent);
+    setIsGrayscale(grayscaleActive);
+
     try {
       const newQuote = await generateQuote(input);
-      setVisualEffect('normal');
+      setVisualEffect('normal'); // Brighten up as quote arrives
       setIsFlowerAnimationActive(true);
       setQuoteData(newQuote);
     } catch (e) {
@@ -57,6 +84,9 @@ export default function HomePage() {
         variant: "destructive",
       });
       setVisualEffect('normal');
+       // Revert to default background on error if needed, or keep current one
+      // setBackgroundComponent(() => DefaultAnimatedBackground); 
+      // setIsGrayscale(false);
     } finally {
       setIsLoading(false);
       setTimeout(() => {
@@ -68,16 +98,28 @@ export default function HomePage() {
   useEffect(() => {
     const loadInitialQuote = async () => {
       setIsLoading(true);
+      // Set initial background
+      setBackgroundComponent(() => DefaultAnimatedBackground);
+      setIsGrayscale(false);
       try {
         const newQuote = await generateQuote({ seed: Math.random() });
         setQuoteData(newQuote);
       } catch (e) {
-        console.error(e);
-        toast({
-          title: "Error",
-          description: "Failed to fetch initial quote. Please try again.",
-          variant: "destructive",
-        });
+        if (e instanceof Error) {
+          console.error(e.message);
+          toast({
+            title: "Error",
+            description: "Failed to fetch initial quote: " + e.message,
+            variant: "destructive",
+          });
+        } else {
+           console.error("An unknown error occurred", e);
+           toast({
+            title: "Error",
+            description: "Failed to fetch initial quote. Please try again.",
+            variant: "destructive",
+          });
+        }
       } finally {
         setIsLoading(false);
       }
@@ -87,57 +129,76 @@ export default function HomePage() {
 
   const handleMoodSelect = (moodLabel: MoodLabel) => {
     setSelectedMood(moodLabel);
-    // No longer fetching quote here, only setting the mood.
-    // The "New Quote" button will use this selectedMood.
+    // Update background preview immediately on mood selection
+    let newBgComponent: ComponentType | null = DefaultAnimatedBackground;
+    let grayscaleActive = false;
+    if (moodLabel === 'Sad') {
+      newBgComponent = CloudyBackground;
+      grayscaleActive = true;
+    } else if (moodLabel === 'Motivational' || moodLabel === 'Love') {
+      newBgComponent = SunriseBackground;
+    } else if (moodLabel === 'Scientific') {
+      newBgComponent = TechyBackground;
+    }
+    setBackgroundComponent(() => newBgComponent);
+    setIsGrayscale(grayscaleActive);
   };
 
   return (
-    <div
-      className={cn(
-        "flex flex-col items-center justify-center min-h-screen p-4 text-center bg-background text-foreground relative",
-        "transition-all duration-700 ease-in-out",
-        visualEffect === 'dimmed' ? 'brightness-[0.6]' : 'brightness-100'
-      )}
-    >
-      <WaterRippleEffect />
-      <FlowerAnimation isActive={isFlowerAnimationActive} />
-
-      <header className="py-8 relative z-10">
-        <h1 className="text-5xl font-bold text-primary tracking-tight">
-          QuoteFlow
-        </h1>
-        <p className="text-muted-foreground mt-2 text-lg">Your daily dose of inspiration</p>
-      </header>
-
-      <main className="flex flex-col items-center justify-center flex-1 w-full max-w-2xl px-4 relative z-10">
-        <div className="mb-6 relative z-10">
-          <h2 className="text-xl font-semibold text-foreground mb-3">Choose a Mood:</h2>
-          <div className="flex flex-wrap justify-center gap-2">
-            {moods.map((mood) => (
-              <Button
-                key={mood.label}
-                variant={selectedMood === mood.label ? "default" : "outline"}
-                onClick={() => handleMoodSelect(mood.label)}
-                className={cn(
-                  "capitalize px-4 py-2 w-36 rounded-full shadow-sm transition-all duration-150 ease-in-out", // Added w-36 for fixed width
-                  selectedMood === mood.label ? "bg-primary text-primary-foreground scale-105" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                )}
-                aria-label={`Select ${mood.label} mood`}
-              >
-                {selectedMood === mood.label ? mood.emoji : mood.label}
-              </Button>
-            ))}
-          </div>
+    <>
+      {BackgroundComponent && (
+        <div className="fixed inset-0 z-[-1]">
+          <BackgroundComponent />
         </div>
-        <QuoteDisplay quote={quoteData?.quote} isLoading={isLoading} />
-        <NewQuoteButton onClick={() => fetchQuoteAndAnimate()} isLoading={isLoading} />
-      </main>
+      )}
+      <div
+        className={cn(
+          "flex flex-col items-center justify-center min-h-screen p-4 text-center bg-transparent text-foreground relative", // bg-transparent to see animated bg
+          "transition-all duration-700 ease-in-out",
+          visualEffect === 'dimmed' ? 'brightness-[0.6]' : 'brightness-100',
+          isGrayscale ? 'grayscale-filter' : ''
+        )}
+      >
+        <WaterRippleEffect />
+        <FlowerAnimation isActive={isFlowerAnimationActive} />
 
-      <footer className="w-full py-6 mt-auto text-center relative z-10">
-        <p className="text-sm text-muted-foreground">
-          Powered by GenAI &amp; Next.js
-        </p>
-      </footer>
-    </div>
+        <header className="py-8 relative z-10">
+          <h1 className="text-5xl font-bold text-primary tracking-tight">
+            QuoteFlow
+          </h1>
+          <p className="text-muted-foreground mt-2 text-lg">Your daily dose of inspiration</p>
+        </header>
+
+        <main className="flex flex-col items-center justify-center flex-1 w-full max-w-2xl px-4 relative z-10">
+          <div className="mb-6 relative z-10">
+            <h2 className="text-xl font-semibold text-foreground mb-3">Choose a Mood:</h2>
+            <div className="flex flex-wrap justify-center gap-2">
+              {moods.map((mood) => (
+                <Button
+                  key={mood.label}
+                  variant={selectedMood === mood.label ? "default" : "outline"}
+                  onClick={() => handleMoodSelect(mood.label)}
+                  className={cn(
+                    "capitalize px-4 py-2 w-36 rounded-full shadow-sm transition-all duration-150 ease-in-out", 
+                    selectedMood === mood.label ? "bg-primary text-primary-foreground scale-105" : "bg-secondary/70 backdrop-blur-sm text-secondary-foreground hover:bg-secondary/90" // Added backdrop-blur to secondary
+                  )}
+                  aria-label={`Select ${mood.label} mood`}
+                >
+                  {selectedMood === mood.label ? mood.emoji : mood.label}
+                </Button>
+              ))}
+            </div>
+          </div>
+          <QuoteDisplay quote={quoteData?.quote} isLoading={isLoading} />
+          <NewQuoteButton onClick={() => fetchQuoteAndAnimate()} isLoading={isLoading} />
+        </main>
+
+        <footer className="w-full py-6 mt-auto text-center relative z-10">
+          <p className="text-sm text-muted-foreground">
+            Powered by GenAI &amp; Next.js
+          </p>
+        </footer>
+      </div>
+    </>
   );
 }
