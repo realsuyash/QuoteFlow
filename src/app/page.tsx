@@ -38,12 +38,8 @@ export default function HomePage() {
   const [isLoading, setIsLoading] = useState(true); // For subsequent loads and initial QuoteDisplay skeleton logic
   const [isInitialLoading, setIsInitialLoading] = useState(true); // For splash screen
   const [isFlowerAnimationActive, setIsFlowerAnimationActive] = useState(false);
-  const [selectedMood, setSelectedMood] = useState<MoodLabel | null>(null);
+  const [selectedMood, setSelectedMood] = useState<MoodLabel | null>('Motivational'); // Default to Motivational
   const { toast } = useToast();
-
-  const [BackgroundComponent, setBackgroundComponent] = useState<ComponentType | null>(() => DefaultAnimatedBackground);
-  const [isGrayscale, setIsGrayscale] = useState(false);
-  const [subtitleColorClass, setSubtitleColorClass] = useState('text-muted-foreground');
 
   const getSubtitleColor = useCallback((mood: MoodLabel | null): string => {
     if (mood === 'Motivational') return 'text-primary';
@@ -53,6 +49,11 @@ export default function HomePage() {
     if (mood === 'Scientific') return 'text-accent';
     return 'text-muted-foreground';
   }, []);
+
+  const [BackgroundComponent, setBackgroundComponent] = useState<ComponentType | null>(() => AscendBackground); // Default to Motivational background
+  const [isGrayscale, setIsGrayscale] = useState(false);
+  const [subtitleColorClass, setSubtitleColorClass] = useState(getSubtitleColor('Motivational')); // Default to Motivational subtitle color
+
 
   const fetchQuoteAndAnimate = useCallback(async (moodToFetch?: MoodLabel | null) => {
     setIsLoading(true);
@@ -75,7 +76,10 @@ export default function HomePage() {
       newBgComponent = SunriseBackground;
     } else if (finalMood === 'Scientific') {
       newBgComponent = TechyBackground;
+    } else if (finalMood === 'Funny'){ // Funny also gets default for now, or its own if defined
+      newBgComponent = DefaultAnimatedBackground; // Or a specific funny background
     }
+
 
     setBackgroundComponent(() => newBgComponent);
     setIsGrayscale(grayscaleActive);
@@ -106,13 +110,16 @@ export default function HomePage() {
 
   useEffect(() => {
     const loadInitialQuote = async () => {
-      setIsLoading(true); // Manages skeleton/spinner for QuoteDisplay/Button
-      // isInitialLoading is already true by default for splash screen
-      setBackgroundComponent(() => DefaultAnimatedBackground);
+      setIsLoading(true);
+      setIsInitialLoading(true); // Ensure splash is shown
+
+      // Set initial theme elements for Motivational mood
+      setBackgroundComponent(() => AscendBackground);
       setIsGrayscale(false);
-      setSubtitleColorClass(getSubtitleColor(null));
+      setSubtitleColorClass(getSubtitleColor('Motivational'));
+
       try {
-        const newQuote = await generateQuote({ seed: Math.random() });
+        const newQuote = await generateQuote({ seed: Math.random(), mood: 'Motivational' });
         setQuoteData(newQuote);
       } catch (e) {
         if (e instanceof Error) {
@@ -130,14 +137,17 @@ export default function HomePage() {
             variant: "destructive",
           });
         }
+         // Fallback to default theme elements on error
+        setBackgroundComponent(() => DefaultAnimatedBackground);
         setSubtitleColorClass(getSubtitleColor(null));
+
       } finally {
         setIsLoading(false);
         setIsInitialLoading(false); // Remove splash screen
       }
     };
     loadInitialQuote();
-  }, [toast, getSubtitleColor]);
+  }, [toast, getSubtitleColor]); // getSubtitleColor added to dependencies
 
   const handleMoodSelect = (moodLabel: MoodLabel) => {
     setSelectedMood(moodLabel);
@@ -152,6 +162,8 @@ export default function HomePage() {
       newBgComponent = SunriseBackground;
     } else if (moodLabel === 'Scientific') {
       newBgComponent = TechyBackground;
+    } else if (moodLabel === 'Funny'){
+      newBgComponent = DefaultAnimatedBackground;
     }
     setBackgroundComponent(() => newBgComponent);
     setIsGrayscale(grayscaleActive);
@@ -169,7 +181,7 @@ export default function HomePage() {
         <div
           className={cn(
             "flex flex-col items-center justify-center min-h-screen p-4 text-center bg-transparent text-foreground relative",
-            isGrayscale ? 'grayscale-filter' : '' // Though grayscale won't be active on initial load usually
+            isGrayscale ? 'grayscale-filter' : ''
           )}
         >
           <WaterRippleEffect />
