@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -149,7 +150,7 @@ body {
     opacity: 0.8;
   }
   100% {
-    transform: translate(-50%, -50%) scale(6);
+    transform: translate(-50%, -50%) scale(3.5); /* Reduced scale for smaller radius */
     opacity: 0;
   }
 }
@@ -160,7 +161,11 @@ body {
   height: 50px;
   border-radius: 50%;
   border: 2px solid hsl(var(--primary));
-  animation: ripple-effect 0.7s ease-out forwards;
+  animation-name: ripple-effect;
+  animation-duration: 0.7s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
   pointer-events: none;
   z-index: 40; 
+  /* animation-delay is set via inline style in the component */
 }
