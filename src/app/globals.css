@@ -269,6 +269,20 @@ body {
   animation-delay: -10s;
 }
 
+/* Ascend Background for Motivational */
+@keyframes ascend-gradient {
+  0% { background-position: 50% 100%; } /* Start from bottom */
+  50% { background-position: 50% 0%; }   /* Move to top */
+  100% { background-position: 50% 100%; } /* Reset */
+}
+
+.ascend-bg {
+  background: linear-gradient(0deg, hsl(var(--background)), hsl(var(--primary)/0.5), hsl(var(--accent)/0.4));
+  background-size: 100% 300%; /* Taller gradient for vertical movement */
+  animation: ascend-gradient 15s ease-in-out infinite;
+}
+
+
 .grayscale-filter {
   filter: grayscale(100%);
   transition: filter 0.7s ease-in-out;

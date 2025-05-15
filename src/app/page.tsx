@@ -15,6 +15,8 @@ import DefaultAnimatedBackground from '@/components/backgrounds/DefaultAnimatedB
 import SunriseBackground from '@/components/backgrounds/SunriseBackground';
 import CloudyBackground from '@/components/backgrounds/CloudyBackground';
 import TechyBackground from '@/components/backgrounds/TechyBackground';
+import AscendBackground from '@/components/backgrounds/AscendBackground';
+
 
 interface MoodObject {
   label: 'Motivational' | 'Funny' | 'Love' | 'Sad' | 'Scientific';
@@ -61,7 +63,7 @@ export default function HomePage() {
       newBgComponent = CloudyBackground;
       grayscaleActive = true;
     } else if (finalMood === 'Motivational') {
-      newBgComponent = TechyBackground;
+      newBgComponent = AscendBackground;
     } else if (finalMood === 'Love') {
       newBgComponent = SunriseBackground;
     } else if (finalMood === 'Scientific') {
@@ -138,7 +140,7 @@ export default function HomePage() {
       newBgComponent = CloudyBackground;
       grayscaleActive = true;
     } else if (moodLabel === 'Motivational') {
-      newBgComponent = TechyBackground;
+      newBgComponent = AscendBackground;
     } else if (moodLabel === 'Love') {
       newBgComponent = SunriseBackground;
     } else if (moodLabel === 'Scientific') {
