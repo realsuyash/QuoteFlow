@@ -46,8 +46,6 @@ export default function HomePage() {
   const [selectedMood, setSelectedMood] = useState<MoodLabel | null>('Motivational'); 
   const { toast } = useToast();
 
-  const [isShaking, setIsShaking] = useState(false);
-
   const getSubtitleColor = useCallback((mood: MoodLabel | null): string => {
     if (mood === 'Motivational') return 'text-primary';
     if (mood === 'Funny') return 'text-accent';
@@ -89,8 +87,6 @@ export default function HomePage() {
       newBgComponent = TechyBackground;
     } else if (finalMood === 'Funny'){ 
       newBgComponent = FunnyBackground;
-      setIsShaking(true);
-      setTimeout(() => setIsShaking(false), 300);
     }
     
     setBackgroundComponent(() => newBgComponent);
@@ -155,11 +151,14 @@ export default function HomePage() {
         // Trigger motivational animation on initial load
         setIsMotivationalAnimationActive(true);
         setTimeout(() => setIsMotivationalAnimationActive(false), 4500);
-      } catch (e) {
+      } catch (e: any) {
         console.error(e);
         let errorMessage = "Failed to fetch initial quote. Please try again.";
         if (e instanceof Error) {
           errorMessage = `Failed to fetch initial quote: ${e.message}`;
+        }
+        if (typeof e === 'string' && (e.includes("429") || e.toLowerCase().includes("quota"))) {
+          errorMessage = "Whoa there, easy on the clicks! Rate limit reached on initial load. Please try again in a little bit. 😄";
         }
 
         toast({
@@ -248,8 +247,7 @@ export default function HomePage() {
         className={cn(
           "flex flex-col items-center justify-center min-h-screen p-4 text-center bg-transparent text-foreground relative",
           "transition-all duration-700 ease-in-out",
-          isGrayscale ? 'grayscale-filter' : '',
-          isShaking ? 'animate-screenShake' : '' // Apply screen shake conditionally
+          isGrayscale ? 'grayscale-filter' : ''
         )}
       >
         <WaterRippleEffect />
@@ -297,4 +295,3 @@ export default function HomePage() {
     </>
   );
 }
-
