@@ -37,7 +37,6 @@ export default function HomePage() {
   const [quoteData, setQuoteData] = useState<GenerateQuoteOutput | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isFlowerAnimationActive, setIsFlowerAnimationActive] = useState(false);
-  const [visualEffect, setVisualEffect] = useState<'normal' | 'dimmed'>('normal');
   const [selectedMood, setSelectedMood] = useState<MoodLabel | null>(null);
   const { toast } = useToast();
 
@@ -47,15 +46,14 @@ export default function HomePage() {
 
   const getSubtitleColor = useCallback((mood: MoodLabel | null): string => {
     if (mood === 'Motivational') return 'text-primary';
-    if (mood === 'Funny') return 'text-accent'; // Changed from text-secondary-foreground
-    if (mood === 'Love') return 'text-chart-1'; 
+    if (mood === 'Funny') return 'text-accent';
+    if (mood === 'Love') return 'text-chart-1';
     if (mood === 'Sad') return 'text-foreground'; // Will be grayscaled
     if (mood === 'Scientific') return 'text-accent';
     return 'text-muted-foreground'; // Default
   }, []);
 
   const fetchQuoteAndAnimate = useCallback(async (moodToFetch?: MoodLabel | null) => {
-    setVisualEffect('dimmed');
     setIsLoading(true);
 
     const finalMood = moodToFetch !== undefined ? moodToFetch : selectedMood;
@@ -84,7 +82,6 @@ export default function HomePage() {
 
     try {
       const newQuote = await generateQuote(input);
-      setVisualEffect('normal');
       setIsFlowerAnimationActive(true);
       setQuoteData(newQuote);
     } catch (e) {
@@ -94,7 +91,6 @@ export default function HomePage() {
         description: "Failed to fetch a new quote. Please try again.",
         variant: "destructive",
       });
-      setVisualEffect('normal');
       // Revert to default background and subtitle color on error
       setBackgroundComponent(() => DefaultAnimatedBackground); 
       setIsGrayscale(false);
@@ -170,7 +166,6 @@ export default function HomePage() {
         className={cn(
           "flex flex-col items-center justify-center min-h-screen p-4 text-center bg-transparent text-foreground relative",
           "transition-all duration-700 ease-in-out",
-          visualEffect === 'dimmed' ? 'brightness-[0.6]' : 'brightness-100',
           isGrayscale ? 'grayscale-filter' : ''
         )}
       >
