@@ -183,7 +183,7 @@ body {
 }
 
 .sunrise-bg {
-  background: linear-gradient(to top, #3a1c71, #d76d77, #ffaf7b); /* Purple -> Pink -> Orange */
+  background: linear-gradient(to top, #fbc2eb, #fcc5e4, #ffdde1); /* Light Pink -> Lighter Pink -> Very Light Peach/Pink */
   background-size: 100% 300%; /* Taller gradient for vertical movement */
   animation: sunrise 20s ease infinite;
 }
@@ -287,3 +287,4 @@ body {
   filter: grayscale(100%);
   transition: filter 0.7s ease-in-out;
 }
+
