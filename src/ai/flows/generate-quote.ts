@@ -1,7 +1,7 @@
 'use server';
 
 /**
- * @fileOverview Generates a random quote using an AI tool.
+ * @fileOverview Generates a random quote using an AI tool, potentially based on a mood.
  *
  * - generateQuote - A function that handles the quote generation process.
  * - GenerateQuoteInput - The input type for the generateQuote function.
@@ -13,6 +13,7 @@ import {z} from 'genkit';
 
 const GenerateQuoteInputSchema = z.object({
   seed: z.number().optional().describe('Optional seed to generate the quote.'),
+  mood: z.string().optional().describe('Optional mood for the quote (e.g., Motivational, Funny, Love, Sad, Scientific).'),
 });
 export type GenerateQuoteInput = z.infer<typeof GenerateQuoteInputSchema>;
 
@@ -29,7 +30,12 @@ const prompt = ai.definePrompt({
   name: 'generateQuotePrompt',
   input: {schema: GenerateQuoteInputSchema},
   output: {schema: GenerateQuoteOutputSchema},
-  prompt: `You are a quote generator.  Generate a quote. The quote should be inspiring.
+  prompt: `You are a quote generator.
+{{#if mood}}
+Generate a {{mood}} quote.
+{{else}}
+Generate an inspiring quote.
+{{/if}}
 
 Seed: {{seed}}`,
 });
