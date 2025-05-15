@@ -26,7 +26,7 @@ interface MoodObject {
 const moods: MoodObject[] = [
   { label: 'Motivational', emoji: '🎯' },
   { label: 'Funny', emoji: '🤣' },
-  { label: 'Love', emoji: '❤️' },
+  { label: 'Love', emoji: '🩷' },
   { label: 'Sad', emoji: '😔' },
   { label: 'Scientific', emoji: '🔬' },
 ];
