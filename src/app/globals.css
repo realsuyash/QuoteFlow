@@ -161,6 +161,7 @@ body {
   height: 50px;
   border-radius: 50%;
   border: 2px solid hsl(var(--primary));
+  opacity: 0; /* Make ripple initially invisible */
   animation-name: ripple-effect;
   animation-duration: 0.7s;
   animation-timing-function: ease-out;
