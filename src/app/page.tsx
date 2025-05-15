@@ -74,7 +74,8 @@ export default function HomePage() {
 
   const handleMoodSelect = (mood: Mood) => {
     setSelectedMood(mood);
-    fetchQuoteAndAnimate(mood);
+    // No longer fetching quote here, only setting the mood.
+    // The "New Quote" button will use this selectedMood.
   };
 
   return (
