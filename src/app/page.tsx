@@ -43,7 +43,16 @@ export default function HomePage() {
 
   const [BackgroundComponent, setBackgroundComponent] = useState<ComponentType | null>(() => DefaultAnimatedBackground);
   const [isGrayscale, setIsGrayscale] = useState(false);
+  const [subtitleColorClass, setSubtitleColorClass] = useState('text-muted-foreground');
 
+  const getSubtitleColor = useCallback((mood: MoodLabel | null): string => {
+    if (mood === 'Motivational') return 'text-accent';
+    if (mood === 'Funny') return 'text-secondary-foreground';
+    if (mood === 'Love') return 'text-primary';
+    if (mood === 'Sad') return 'text-foreground'; // Will be grayscaled
+    if (mood === 'Scientific') return 'text-accent';
+    return 'text-muted-foreground'; // Default
+  }, []);
 
   const fetchQuoteAndAnimate = useCallback(async (moodToFetch?: MoodLabel | null) => {
     setVisualEffect('dimmed');
@@ -55,7 +64,6 @@ export default function HomePage() {
       input.mood = finalMood;
     }
 
-    // Determine background based on the mood being fetched
     let newBgComponent: ComponentType | null = DefaultAnimatedBackground;
     let grayscaleActive = false;
 
@@ -69,15 +77,14 @@ export default function HomePage() {
     } else if (finalMood === 'Scientific') {
       newBgComponent = TechyBackground;
     }
-    // For 'Funny' or no mood, it remains DefaultAnimatedBackground
     
-    // Set background immediately before fetching quote for smoother transition
     setBackgroundComponent(() => newBgComponent);
     setIsGrayscale(grayscaleActive);
+    setSubtitleColorClass(getSubtitleColor(finalMood));
 
     try {
       const newQuote = await generateQuote(input);
-      setVisualEffect('normal'); // Brighten up as quote arrives
+      setVisualEffect('normal');
       setIsFlowerAnimationActive(true);
       setQuoteData(newQuote);
     } catch (e) {
@@ -88,23 +95,24 @@ export default function HomePage() {
         variant: "destructive",
       });
       setVisualEffect('normal');
-       // Revert to default background on error if needed, or keep current one
-      // setBackgroundComponent(() => DefaultAnimatedBackground); 
-      // setIsGrayscale(false);
+      // Revert to default background and subtitle color on error
+      setBackgroundComponent(() => DefaultAnimatedBackground); 
+      setIsGrayscale(false);
+      setSubtitleColorClass(getSubtitleColor(null));
     } finally {
       setIsLoading(false);
       setTimeout(() => {
         setIsFlowerAnimationActive(false);
       }, 6000);
     }
-  }, [toast, selectedMood]);
+  }, [toast, selectedMood, getSubtitleColor]);
 
   useEffect(() => {
     const loadInitialQuote = async () => {
       setIsLoading(true);
-      // Set initial background
       setBackgroundComponent(() => DefaultAnimatedBackground);
       setIsGrayscale(false);
+      setSubtitleColorClass(getSubtitleColor(null)); 
       try {
         const newQuote = await generateQuote({ seed: Math.random() });
         setQuoteData(newQuote);
@@ -124,16 +132,16 @@ export default function HomePage() {
             variant: "destructive",
           });
         }
+        setSubtitleColorClass(getSubtitleColor(null));
       } finally {
         setIsLoading(false);
       }
     };
     loadInitialQuote();
-  }, [toast]);
+  }, [toast, getSubtitleColor]);
 
   const handleMoodSelect = (moodLabel: MoodLabel) => {
     setSelectedMood(moodLabel);
-    // Update background preview immediately on mood selection
     let newBgComponent: ComponentType | null = DefaultAnimatedBackground;
     let grayscaleActive = false;
     if (moodLabel === 'Sad') {
@@ -148,6 +156,7 @@ export default function HomePage() {
     }
     setBackgroundComponent(() => newBgComponent);
     setIsGrayscale(grayscaleActive);
+    setSubtitleColorClass(getSubtitleColor(moodLabel));
   };
 
   return (
@@ -159,7 +168,7 @@ export default function HomePage() {
       )}
       <div
         className={cn(
-          "flex flex-col items-center justify-center min-h-screen p-4 text-center bg-transparent text-foreground relative", // bg-transparent to see animated bg
+          "flex flex-col items-center justify-center min-h-screen p-4 text-center bg-transparent text-foreground relative",
           "transition-all duration-700 ease-in-out",
           visualEffect === 'dimmed' ? 'brightness-[0.6]' : 'brightness-100',
           isGrayscale ? 'grayscale-filter' : ''
@@ -172,7 +181,9 @@ export default function HomePage() {
           <h1 className="text-5xl font-bold text-primary tracking-tight">
             QuoteFlow
           </h1>
-          <p className="text-muted-foreground mt-2 text-lg">Your daily dose of inspiration</p>
+          <p className={cn("mt-2 text-lg transition-colors duration-300 ease-in-out", subtitleColorClass)}>
+            Your daily dose of inspiration
+          </p>
         </header>
 
         <main className="flex flex-col items-center justify-center flex-1 w-full max-w-2xl px-4 relative z-10">
@@ -186,7 +197,7 @@ export default function HomePage() {
                   onClick={() => handleMoodSelect(mood.label)}
                   className={cn(
                     "capitalize px-4 py-2 w-36 rounded-full shadow-sm transition-all duration-150 ease-in-out", 
-                    selectedMood === mood.label ? "bg-primary text-primary-foreground scale-105" : "bg-secondary/70 backdrop-blur-sm text-secondary-foreground hover:bg-secondary/90" // Added backdrop-blur to secondary
+                    selectedMood === mood.label ? "bg-primary text-primary-foreground scale-105" : "bg-secondary/70 backdrop-blur-sm text-secondary-foreground hover:bg-secondary/90"
                   )}
                   aria-label={`Select ${mood.label} mood`}
                 >
