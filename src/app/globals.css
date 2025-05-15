@@ -118,12 +118,12 @@ body {
   }
 }
 
-/* Animation for flowers */
-@keyframes flowerThrowEffect {
+/* Animation for flowers and glitter */
+@keyframes elementThrowEffect {
   0% {
     opacity: 0;
     /* Start at its initial JS-set position (bottom-center), small, no rotation */
-    transform: translate(0, 0) scale(0.2) rotate(0deg);
+    transform: translate(0, 0) scale(var(--initial-scale, 0.2)) rotate(var(--initial-rotate, 0deg));
   }
   20% {
     opacity: 1; /* Quickly become visible */
@@ -131,13 +131,13 @@ body {
   100% {
     opacity: 0;
     /* Animate to its final calculated position (using CSS vars for delta), scaled up, rotated */
-    transform: translate(var(--tx, 0px), var(--ty, 0px)) scale(1.3) rotate(720deg);
+    transform: translate(var(--tx, 0px), var(--ty, 0px)) scale(var(--target-scale, 1.3)) rotate(var(--target-rotate, 720deg));
   }
 }
 
-.animate-flowerThrow {
-  animation-name: flowerThrowEffect;
+.animate-elementThrow {
+  animation-name: elementThrowEffect;
   animation-timing-function: cubic-bezier(0.25, 0.8, 0.5, 1); /* Ease out quad like */
   animation-fill-mode: forwards; /* Stay at the end state (opacity: 0) */
-  /* animation-duration and animation-delay are set via inline styles on each flower */
+  /* animation-duration and animation-delay are set via inline styles on each element */
 }
