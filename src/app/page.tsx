@@ -6,7 +6,7 @@ import { generateQuote, type GenerateQuoteOutput, type GenerateQuoteInput } from
 import QuoteDisplay from '@/components/quote-display';
 import NewQuoteButton from '@/components/new-quote-button';
 import FlowerAnimation from '@/components/flower-animation';
-import WaterRippleEffect from '@/components/water-ripple-effect'; // Import the new component
+import WaterRippleEffect from '@/components/water-ripple-effect';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -99,7 +99,7 @@ export default function HomePage() {
         visualEffect === 'dimmed' ? 'brightness-[0.6]' : 'brightness-100'
       )}
     >
-      <WaterRippleEffect /> {/* Add the WaterRippleEffect component */}
+      <WaterRippleEffect />
       <FlowerAnimation isActive={isFlowerAnimationActive} />
 
       <header className="py-8 relative z-10">
@@ -119,7 +119,7 @@ export default function HomePage() {
                 variant={selectedMood === mood.label ? "default" : "outline"}
                 onClick={() => handleMoodSelect(mood.label)}
                 className={cn(
-                  "capitalize px-4 py-2 rounded-full shadow-sm transition-all duration-150 ease-in-out",
+                  "capitalize px-4 py-2 w-36 rounded-full shadow-sm transition-all duration-150 ease-in-out", // Added w-36 for fixed width
                   selectedMood === mood.label ? "bg-primary text-primary-foreground scale-105" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                 )}
                 aria-label={`Select ${mood.label} mood`}
