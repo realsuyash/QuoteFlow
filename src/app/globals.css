@@ -282,6 +282,18 @@ body {
   animation: ascend-gradient 15s ease-in-out infinite;
 }
 
+/* Funny Green Animated Background */
+.funny-green-animated-bg {
+  background: linear-gradient(-45deg, 
+    hsl(90, 70%, 60%), /* Light Lime Green */
+    hsl(120, 60%, 50%), /* Medium Green */
+    hsl(170, 70%, 45%), /* Tealish Green (Accent) */
+    hsl(150, 65%, 70%)  /* Light Mint Green */
+  );
+  background-size: 400% 400%;
+  animation: gradientBG 20s ease infinite; /* Reusing gradientBG for similar effect */
+}
+
 
 .grayscale-filter {
   filter: grayscale(100%);
@@ -399,3 +411,5 @@ body {
 .animate-screenShake {
   animation: screenShake 0.3s linear;
 }
+
+    
