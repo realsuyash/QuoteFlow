@@ -3,11 +3,19 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 
+// Define HSL colors based on the theme's primary color, with varying alpha
+const rippleColors = [
+  `hsla(var(--primary), 1)`,      // Full opacity primary
+  `hsla(var(--primary), 0.7)`,   // 70% opacity primary
+  `hsla(var(--primary), 0.4)`,   // 40% opacity primary
+];
+
 interface Ripple {
   id: number;
   x: number;
   y: number;
-  animationDelay: string; // e.g., "0s", "0.15s", "0.3s"
+  color: string;
+  animationDelay: string;
 }
 
 const WaterRippleEffect: React.FC = () => {
@@ -20,19 +28,22 @@ const WaterRippleEffect: React.FC = () => {
         id: baseId,
         x: event.clientX,
         y: event.clientY,
+        color: rippleColors[0],
         animationDelay: '0s',
       },
       {
-        id: baseId + 1, // Ensure unique IDs
+        id: baseId + 1,
         x: event.clientX,
         y: event.clientY,
-        animationDelay: '0.15s', // Second wave starts slightly later
+        color: rippleColors[1],
+        animationDelay: '0.15s',
       },
       {
-        id: baseId + 2, // Ensure unique IDs
+        id: baseId + 2,
         x: event.clientX,
         y: event.clientY,
-        animationDelay: '0.3s', // Third wave starts even later
+        color: rippleColors[2],
+        animationDelay: '0.3s',
       },
     ];
 
@@ -60,6 +71,7 @@ const WaterRippleEffect: React.FC = () => {
           style={{
             left: `${ripple.x}px`,
             top: `${ripple.y}px`,
+            borderColor: ripple.color,
             animationDelay: ripple.animationDelay,
           }}
           onAnimationEnd={() => handleAnimationEnd(ripple.id)} 
