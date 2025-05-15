@@ -11,7 +11,7 @@ interface AnimatedEmojiProps {
   colorClass: string;
 }
 
-const emojis = ['🎉', '😂', '🤪', '🥳', '🤩', '🤯', '🎊']; // Ensure 🎉, 😂, 🤪 are present
+const emojis = ['🎉', '😂', '🤪', '🥳', '🤩', '🤯', '🎊'];
 const emojiColors = [
   'text-yellow-400',
   'text-pink-500',
@@ -73,7 +73,7 @@ const FunnyBackground: React.FC<FunnyBackgroundProps> = ({ isActive = false, ele
   }, [isActive, elementCount]);
 
   return (
-    <div className={cn("absolute inset-0 w-full h-full -z-10 funny-wavy-bg overflow-hidden")}>
+    <div className={cn("absolute inset-0 w-full h-full -z-10 bg-yellow-300 overflow-hidden")}>
       {isActive && animatedEmojis.map((el) => (
         <span
           key={el.id}

@@ -291,73 +291,111 @@ body {
 /* Love Hearts Animation */
 @keyframes heartFloatPulse {
   0% {
-    transform: translateY(0) scale(1);
-    opacity: 0.7;
+    transform: translateY(0) scale(var(--heart-initial-scale, 1)) rotate(var(--heart-initial-rotate, 0deg)) ;
+    opacity: 0;
+  }
+  20% { /* Fade in */
+    opacity: var(--heart-max-opacity, 0.7);
   }
   50% {
-    transform: translateY(-20px) scale(1.1);
-    opacity: 1;
+    transform: translateY(-50vh) scale(var(--heart-mid-scale, 1.1)) rotate(var(--heart-mid-rotate, 10deg));
+    opacity: var(--heart-max-opacity, 0.7);
   }
   100% {
-    transform: translateY(-40px) scale(1);
+    transform: translateY(-105vh) scale(var(--heart-final-scale, 0.8)) rotate(var(--heart-final-rotate, -10deg));
     opacity: 0;
   }
 }
+
 
 .love-heart {
   position: absolute;
   color: hsla(330, 100%, 80%, 0.7); /* Base pink color for hearts */
   animation-name: heartFloatPulse;
-  animation-timing-function: ease-in-out;
+  animation-timing-function: linear;
   animation-iteration-count: infinite;
   opacity: 0; /* Start transparent, animation handles fade in/out */
+   --heart-initial-rotate: 0deg;
+   --heart-mid-rotate: 0deg;
+   --heart-final-rotate: 0deg;
 }
 
 .love-heart-1 {
   width: 30px; height: 30px;
-  left: 10%;
-  bottom: 5%;
-  animation-duration: 8s;
-  animation-delay: 0s;
+  left: 10%; top: 90%; /* Start near bottom */
+  animation-duration: 8s; animation-delay: 0s;
+  --heart-final-rotate: -15deg;
 }
 
 .love-heart-2 {
   width: 45px; height: 45px;
-  left: 30%;
-  bottom: 10%;
-  animation-duration: 7s;
-  animation-delay: 1.5s;
+  left: 30%; top: 95%;
+  animation-duration: 7s; animation-delay: 1.5s;
+  --heart-mid-scale: 1.2;
+  --heart-initial-rotate: 10deg;
 }
 
 .love-heart-3 {
   width: 25px; height: 25px;
-  left: 50%;
-  bottom: 2%;
-  animation-duration: 9s;
-  animation-delay: 3s;
+  left: 50%; top: 85%;
+  animation-duration: 9s; animation-delay: 3s;
+  --heart-final-rotate: 20deg;
 }
 
 .love-heart-4 {
   width: 40px; height: 40px;
-  left: 70%;
-  bottom: 8%;
-  animation-duration: 6s;
-  animation-delay: 0.5s;
+  left: 70%; top: 92%;
+  animation-duration: 6s; animation-delay: 0.5s;
+  --heart-mid-scale: 1.15;
+  --heart-initial-rotate: -5deg;
 }
 
 .love-heart-5 {
   width: 35px; height: 35px;
-  left: 90%;
-  bottom: 12%;
-  animation-duration: 8.5s;
-  animation-delay: 2s;
+  left: 90%; top: 88%;
+  animation-duration: 8.5s; animation-delay: 2s;
+   --heart-final-rotate: 5deg;
 }
 
 .love-heart-6 {
   width: 20px; height: 20px;
-  left: 20%;
-  bottom: 15%;
-  animation-duration: 10s;
-  animation-delay: 4s;
+  left: 20%; top: 93%;
+  animation-duration: 10s; animation-delay: 4s;
+  --heart-initial-scale: 0.8;
+}
+.love-heart-7 {
+  width: 50px; height: 50px;
+  left: 5%; top: 80%;
+  animation-duration: 7.5s; animation-delay: 1s;
+  --heart-mid-scale: 1.25;
+  --heart-final-rotate: -25deg;
+}
+.love-heart-8 {
+  width: 28px; height: 28px;
+  left: 60%; top: 94%;
+  animation-duration: 9.5s; animation-delay: 2.5s;
+  --heart-initial-rotate: 5deg;
+}
+.love-heart-9 {
+  width: 38px; height: 38px;
+  left: 80%; top: 82%;
+  animation-duration: 6.5s; animation-delay: 3.5s;
+  --heart-final-rotate: 15deg;
+}
+.love-heart-10 {
+  width: 22px; height: 22px;
+  left: 40%; top: 89%;
+  animation-duration: 10.5s; animation-delay: 0.8s;
+  --heart-mid-scale: 1.05;
 }
 
+/* Screen Shake Animation for Funny Mood */
+@keyframes screenShake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.animate-screenShake {
+  animation: screenShake 0.3s linear;
+}
