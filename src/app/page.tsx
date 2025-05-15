@@ -51,7 +51,7 @@ export default function HomePage() {
   const getSubtitleColor = useCallback((mood: MoodLabel | null): string => {
     if (mood === 'Motivational') return 'text-primary';
     if (mood === 'Funny') return 'text-accent';
-    if (mood === 'Love') return 'text-chart-1';
+    if (mood === 'Love') return 'text-chart-1'; 
     if (mood === 'Sad') return 'text-foreground';
     if (mood === 'Scientific') return 'text-accent';
     return 'text-muted-foreground';
@@ -64,6 +64,7 @@ export default function HomePage() {
 
   const fetchQuoteAndAnimate = useCallback(async (moodToFetch?: MoodLabel | null) => {
     setIsLoading(true);
+    // Reset all animation flags
     setIsFlowerAnimationActive(false);
     setIsFunnyAnimationActive(false);
     setIsMotivationalAnimationActive(false);
@@ -105,7 +106,7 @@ export default function HomePage() {
       } else if (finalMood === 'Motivational') {
         setIsMotivationalAnimationActive(true);
         setTimeout(() => setIsMotivationalAnimationActive(false), 4500);
-      } else {
+      } else { // For Love, Sad, Scientific, Default
         setIsFlowerAnimationActive(true);
         setTimeout(() => setIsFlowerAnimationActive(false), 6000);
       }
@@ -127,7 +128,7 @@ export default function HomePage() {
       });
       
       // Reset to default if error
-      setBackgroundComponent(() => AscendBackground); // Revert to default (motivational) on error
+      setBackgroundComponent(() => AscendBackground); 
       setIsGrayscale(false);
       setSubtitleColorClass(getSubtitleColor('Motivational'));
       setSelectedMood('Motivational');
@@ -146,7 +147,7 @@ export default function HomePage() {
       setBackgroundComponent(() => AscendBackground);
       setIsGrayscale(false);
       setSubtitleColorClass(getSubtitleColor('Motivational'));
-      setSelectedMood('Motivational');
+      setSelectedMood('Motivational'); // Set initial mood for theme
 
       try {
         const newQuote = await generateQuote({ seed: Math.random(), mood: 'Motivational' });
@@ -155,36 +156,52 @@ export default function HomePage() {
         setIsMotivationalAnimationActive(true);
         setTimeout(() => setIsMotivationalAnimationActive(false), 4500);
       } catch (e) {
+        console.error(e);
+        let errorMessage = "Failed to fetch initial quote. Please try again.";
         if (e instanceof Error) {
-          console.error(e.message);
-          toast({
-            title: "Error",
-            description: "Failed to fetch initial quote: " + e.message,
-            variant: "destructive",
-          });
-        } else {
-           console.error("An unknown error occurred", e);
-           toast({
-            title: "Error",
-            description: "Failed to fetch initial quote. Please try again.",
-            variant: "destructive",
-          });
+          errorMessage = `Failed to fetch initial quote: ${e.message}`;
         }
+
+        toast({
+            title: "Error",
+            description: errorMessage,
+            variant: "destructive",
+          });
+        // Reset to default theme if initial load fails
         setBackgroundComponent(() => DefaultAnimatedBackground);
         setSubtitleColorClass(getSubtitleColor(null));
         setSelectedMood(null);
-
       } finally {
         setIsLoading(false);
         setIsInitialLoading(false); 
       }
     };
     loadInitialQuote();
-  }, [toast, getSubtitleColor]); 
+  }, [toast, getSubtitleColor]); // Ensure getSubtitleColor is in dependencies
 
   const handleMoodSelect = (moodLabel: MoodLabel) => {
     setSelectedMood(moodLabel);
-    fetchQuoteAndAnimate(moodLabel); // Fetch new quote when mood is selected
+    // Determine new background and subtitle color based on moodLabel
+    let newBgComponent: ComponentType<{isActive?: boolean}> | null = DefaultAnimatedBackground;
+    let grayscaleActive = false;
+
+    if (moodLabel === 'Sad') {
+      newBgComponent = CloudyBackground;
+      grayscaleActive = true;
+    } else if (moodLabel === 'Motivational') {
+      newBgComponent = AscendBackground;
+    } else if (moodLabel === 'Love') {
+      newBgComponent = SunriseBackground;
+    } else if (moodLabel === 'Scientific') {
+      newBgComponent = TechyBackground;
+    } else if (moodLabel === 'Funny'){
+      newBgComponent = FunnyBackground;
+    }
+
+    setBackgroundComponent(() => newBgComponent);
+    setIsGrayscale(grayscaleActive);
+    setSubtitleColorClass(getSubtitleColor(moodLabel));
+    // Do NOT fetch a new quote here. Theme is set, quote will be fetched by "New Quote" button.
   };
 
   if (isInitialLoading) {
@@ -192,6 +209,7 @@ export default function HomePage() {
       <>
         {BackgroundComponent && (
           <div className="fixed inset-0 z-[-1]">
+            {/* @ts-ignore TODO: Fix isActive prop type for all BackgroundComponents */}
             <BackgroundComponent isActive={isMotivationalAnimationActive}/>
           </div>
         )}
@@ -212,7 +230,10 @@ export default function HomePage() {
     );
   }
 
-  const currentBgIsActive = selectedMood === 'Funny' ? isFunnyAnimationActive : selectedMood === 'Motivational' ? isMotivationalAnimationActive : undefined;
+  const currentBgIsActive = 
+    selectedMood === 'Funny' ? isFunnyAnimationActive : 
+    selectedMood === 'Motivational' ? isMotivationalAnimationActive : 
+    undefined;
 
 
   return (
@@ -228,7 +249,7 @@ export default function HomePage() {
           "flex flex-col items-center justify-center min-h-screen p-4 text-center bg-transparent text-foreground relative",
           "transition-all duration-700 ease-in-out",
           isGrayscale ? 'grayscale-filter' : '',
-          isShaking ? 'animate-screenShake' : ''
+          isShaking ? 'animate-screenShake' : '' // Apply screen shake conditionally
         )}
       >
         <WaterRippleEffect />
@@ -276,3 +297,4 @@ export default function HomePage() {
     </>
   );
 }
+
