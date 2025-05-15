@@ -47,8 +47,8 @@ export default function HomePage() {
 
   const getSubtitleColor = useCallback((mood: MoodLabel | null): string => {
     if (mood === 'Motivational') return 'text-primary';
-    if (mood === 'Funny') return 'text-secondary-foreground';
-    if (mood === 'Love') return 'text-chart-1'; // Changed from text-primary
+    if (mood === 'Funny') return 'text-accent'; // Changed from text-secondary-foreground
+    if (mood === 'Love') return 'text-chart-1'; 
     if (mood === 'Sad') return 'text-foreground'; // Will be grayscaled
     if (mood === 'Scientific') return 'text-accent';
     return 'text-muted-foreground'; // Default
