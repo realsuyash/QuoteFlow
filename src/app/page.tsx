@@ -48,9 +48,9 @@ export default function HomePage() {
     if (mood === 'Motivational') return 'text-primary';
     if (mood === 'Funny') return 'text-accent';
     if (mood === 'Love') return 'text-chart-1';
-    if (mood === 'Sad') return 'text-foreground'; // Will be grayscaled
+    if (mood === 'Sad') return 'text-foreground'; 
     if (mood === 'Scientific') return 'text-accent';
-    return 'text-muted-foreground'; // Default
+    return 'text-muted-foreground'; 
   }, []);
 
   const fetchQuoteAndAnimate = useCallback(async (moodToFetch?: MoodLabel | null) => {
@@ -91,7 +91,6 @@ export default function HomePage() {
         description: "Failed to fetch a new quote. Please try again.",
         variant: "destructive",
       });
-      // Revert to default background and subtitle color on error
       setBackgroundComponent(() => DefaultAnimatedBackground); 
       setIsGrayscale(false);
       setSubtitleColorClass(getSubtitleColor(null));
@@ -201,7 +200,7 @@ export default function HomePage() {
               ))}
             </div>
           </div>
-          <QuoteDisplay quote={quoteData?.quote} isLoading={isLoading} />
+          <QuoteDisplay quote={quoteData?.quote} author={quoteData?.author} isLoading={isLoading} />
           <NewQuoteButton onClick={() => fetchQuoteAndAnimate()} isLoading={isLoading} />
         </main>
 
