@@ -3,6 +3,8 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { Volume2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface QuoteDisplayProps {
@@ -14,7 +16,14 @@ interface QuoteDisplayProps {
 export default function QuoteDisplay({ quote, author, isLoading }: QuoteDisplayProps) {
   const [displayQuote, setDisplayQuote] = useState<string | undefined | null>(null);
   const [displayAuthor, setDisplayAuthor] = useState<string | undefined | null>(null);
-  const [animationKey, setAnimationKey] = useState(0); 
+  const [animationKey, setAnimationKey] = useState(0);
+  const [isTTSSupported, setIsTTSSupported] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      setIsTTSSupported(true);
+    }
+  }, []);
 
   useEffect(() => {
     if (!isLoading && quote) {
@@ -24,11 +33,24 @@ export default function QuoteDisplay({ quote, author, isLoading }: QuoteDisplayP
         setAnimationKey(prev => prev + 1);
       }
     } else if (isLoading && !displayQuote) {
-      // Initial load state, ensure displayQuote and displayAuthor are null so skeleton shows
-      setDisplayQuote(null); 
+      setDisplayQuote(null);
       setDisplayAuthor(null);
     }
   }, [quote, author, isLoading, displayQuote, displayAuthor]);
+
+  const handleSpeak = () => {
+    if (!isTTSSupported || !displayQuote) return;
+
+    if (window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel(); // Stop any currently playing speech
+    }
+
+    const utterance = new SpeechSynthesisUtterance(displayQuote);
+    utterance.lang = 'en-US';
+    // utterance.onend = () => console.log("Speech finished");
+    // utterance.onerror = (event) => console.error("Speech error:", event);
+    window.speechSynthesis.speak(utterance);
+  };
 
   if (isLoading && !displayQuote) {
     return (
@@ -39,7 +61,7 @@ export default function QuoteDisplay({ quote, author, isLoading }: QuoteDisplayP
             <Skeleton className="h-6 w-5/6 bg-muted/70" />
             <Skeleton className="h-6 w-3/4 bg-muted/70" />
           </div>
-          <Skeleton className="h-4 w-1/4 mt-4 bg-muted/70" /> 
+          <Skeleton className="h-4 w-1/4 mt-4 bg-muted/70" />
         </CardContent>
       </Card>
     );
@@ -57,16 +79,28 @@ export default function QuoteDisplay({ quote, author, isLoading }: QuoteDisplayP
             >
               "{displayQuote}"
             </p>
-            {displayAuthor && (
-              <p
-                key={`${animationKey}-author`}
-                className="text-md lg:text-lg mt-3 text-right w-full pr-4 animate-fadeIn"
-                style={{ animationDelay: '0.2s' }} 
-                aria-label={`quote by ${displayAuthor}`}
-              >
-                — {displayAuthor}
-              </p>
-            )}
+            <div className="flex items-center justify-end w-full mt-3 pr-2 animate-fadeIn" style={{ animationDelay: '0.2s' }}>
+              {displayAuthor && (
+                <p
+                  key={`${animationKey}-author`}
+                  className="text-md lg:text-lg"
+                  aria-label={`quote by ${displayAuthor}`}
+                >
+                  — {displayAuthor}
+                </p>
+              )}
+              {isTTSSupported && displayQuote && (
+                <Button 
+                  onClick={handleSpeak} 
+                  variant="ghost" 
+                  size="icon" 
+                  className={`ml-2 ${!displayAuthor ? 'self-end' : ''}`} // Align if no author
+                  aria-label="Speak quote"
+                >
+                  <Volume2 className="h-5 w-5" />
+                </Button>
+              )}
+            </div>
           </>
         ) : (
           <p className="text-xl text-muted-foreground">
