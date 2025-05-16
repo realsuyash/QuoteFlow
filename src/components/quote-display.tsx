@@ -26,15 +26,14 @@ export default function QuoteDisplay({ quote, author, isLoading }: QuoteDisplayP
   }, []);
 
   useEffect(() => {
+    // Only update displayQuote when not loading and a new quote is available
     if (!isLoading && quote) {
+      // Check if the new quote/author is different from the currently displayed one
       if (quote !== displayQuote || author !== displayAuthor) {
         setDisplayQuote(quote);
         setDisplayAuthor(author);
-        setAnimationKey(prev => prev + 1);
+        setAnimationKey(prev => prev + 1); // Trigger fade-in for new quote
       }
-    } else if (isLoading && !displayQuote) {
-      setDisplayQuote(null);
-      setDisplayAuthor(null);
     }
   }, [quote, author, isLoading, displayQuote, displayAuthor]);
 
@@ -47,12 +46,11 @@ export default function QuoteDisplay({ quote, author, isLoading }: QuoteDisplayP
 
     const utterance = new SpeechSynthesisUtterance(displayQuote);
     utterance.lang = 'en-US';
-    // utterance.onend = () => console.log("Speech finished");
-    // utterance.onerror = (event) => console.error("Speech error:", event);
     window.speechSynthesis.speak(utterance);
   };
 
-  if (isLoading && !displayQuote) {
+  // If loading, always show Skeleton
+  if (isLoading) {
     return (
       <Card className="w-full mb-8 shadow-xl bg-card text-card-foreground rounded-lg">
         <CardContent className="p-8 min-h-[150px] flex flex-col items-center justify-center">
@@ -67,46 +65,52 @@ export default function QuoteDisplay({ quote, author, isLoading }: QuoteDisplayP
     );
   }
 
+  // If not loading, and no quote data has been successfully displayed yet
+  if (!displayQuote) {
+    return (
+      <Card className="w-full mb-8 shadow-xl bg-card text-card-foreground rounded-lg">
+        <CardContent className="p-8 min-h-[150px] flex flex-col items-center justify-center">
+          <p className="text-xl text-muted-foreground">
+            Welcome! Click the button to get your first quote.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+  
+  // If not loading and there is a quote to display
   return (
     <Card className="w-full mb-8 shadow-xl bg-card text-card-foreground rounded-lg">
       <CardContent className="p-8 min-h-[150px] flex flex-col items-center justify-center overflow-hidden">
-        {displayQuote ? (
-          <>
+        <p
+          key={animationKey}
+          className="text-2xl lg:text-3xl italic text-center animate-fadeIn"
+          aria-live="polite"
+        >
+          "{displayQuote}"
+        </p>
+        <div className="flex items-center justify-end w-full mt-3 pr-2 animate-fadeIn" style={{ animationDelay: '0.2s' }}>
+          {displayAuthor && (
             <p
-              key={animationKey}
-              className="text-2xl lg:text-3xl italic text-center animate-fadeIn"
-              aria-live="polite"
+              key={`${animationKey}-author`}
+              className="text-md lg:text-lg"
+              aria-label={`quote by ${displayAuthor}`}
             >
-              "{displayQuote}"
+              — {displayAuthor}
             </p>
-            <div className="flex items-center justify-end w-full mt-3 pr-2 animate-fadeIn" style={{ animationDelay: '0.2s' }}>
-              {displayAuthor && (
-                <p
-                  key={`${animationKey}-author`}
-                  className="text-md lg:text-lg"
-                  aria-label={`quote by ${displayAuthor}`}
-                >
-                  — {displayAuthor}
-                </p>
-              )}
-              {isTTSSupported && displayQuote && (
-                <Button 
-                  onClick={handleSpeak} 
-                  variant="ghost" 
-                  size="icon" 
-                  className={`ml-2 ${!displayAuthor ? 'self-end' : ''}`} // Align if no author
-                  aria-label="Speak quote"
-                >
-                  <Volume2 className="h-5 w-5" />
-                </Button>
-              )}
-            </div>
-          </>
-        ) : (
-          <p className="text-xl text-muted-foreground">
-            {!isLoading ? "Welcome! Click the button to get your first quote." : ""}
-          </p>
-        )}
+          )}
+          {isTTSSupported && displayQuote && (
+            <Button 
+              onClick={handleSpeak} 
+              variant="ghost" 
+              size="icon" 
+              className={`ml-2 ${!displayAuthor ? 'self-end' : ''}`}
+              aria-label="Speak quote"
+            >
+              <Volume2 className="h-5 w-5" />
+            </Button>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

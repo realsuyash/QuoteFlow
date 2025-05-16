@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useCallback, ComponentType } from 'react';
@@ -85,7 +84,7 @@ export default function HomePage() {
       newBgComponent = SunriseBackground;
     } else if (finalMood === 'Scientific') {
       newBgComponent = TechyBackground;
-    } else if (finalMood === 'Funny'){ 
+    } else if (finalMood === 'Funny'){
       newBgComponent = FunnyBackground;
     }
     
@@ -200,7 +199,8 @@ export default function HomePage() {
     setBackgroundComponent(() => newBgComponent);
     setIsGrayscale(grayscaleActive);
     setSubtitleColorClass(getSubtitleColor(moodLabel));
-    // Do NOT fetch a new quote here. Theme is set, quote will be fetched by "New Quote" button.
+    // Fetch a new quote when the mood changes:
+    fetchQuoteAndAnimate(moodLabel);
   };
 
   if (isInitialLoading) {
