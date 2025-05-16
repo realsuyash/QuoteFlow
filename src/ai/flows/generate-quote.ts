@@ -33,9 +33,9 @@ const prompt = ai.definePrompt({
   name: 'generateQuotePrompt',
   input: {schema: GenerateQuoteInputSchema},
   output: {schema: GenerateQuoteOutputSchema},
-  prompt: `You are a quote generator.
+  prompt: `You are a quote generator. Please provide a fresh and unique quote.
 {{#if mood}}
-Generate a {{mood}} quote.
+Generate a {{mood}} quote. If the mood is 'Funny', please make an extra effort to ensure the joke or witty observation is different from any previous ones, using the seed value as a strong hint for variation.
 {{else}}
 Generate an inspiring quote.
 {{/if}}
@@ -44,7 +44,7 @@ For some of the quotes, especially if they are original, creative, or insightful
 
 The output must include the 'quote' and an optional 'author'. If no specific author is attributed, the 'author' field can be omitted or be an empty string.
 
-Seed: {{seed}}`,
+Seed for variety: {{seed}}`,
 });
 
 const generateQuoteFlow = ai.defineFlow(
@@ -54,8 +54,22 @@ const generateQuoteFlow = ai.defineFlow(
     outputSchema: GenerateQuoteOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    // Ensure output is not null and adheres to the schema, even if author is missing
-    return output || { quote: "An error occurred generating the quote.", author: undefined };
+    try {
+      const {output} = await prompt(input);
+      // Ensure output is not null and adheres to the schema, even if author is missing
+      return output || { quote: "An error occurred generating the quote. The AI didn't return a valid response.", author: undefined };
+    } catch (error: any) {
+      console.error("Error in generateQuoteFlow:", error);
+      // Construct a user-friendly error message, potentially including parts of the original error.
+      let errorMessage = "An error occurred generating your quote. Please try again.";
+      if (error.message && error.message.includes("429")) {
+        errorMessage = "Rate limit reached. Please try again in a moment.";
+      } else if (error.message) {
+        // You might want to be careful about exposing too much detail from internal errors.
+        // errorMessage = `Failed to generate quote: ${error.message.substring(0, 100)}`;
+      }
+      return { quote: errorMessage, author: "System" };
+    }
   }
 );
+
